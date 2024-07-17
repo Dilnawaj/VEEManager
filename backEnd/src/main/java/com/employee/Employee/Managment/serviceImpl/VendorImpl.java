@@ -117,8 +117,8 @@ public class VendorImpl implements VendorService{
 	}
 
 	@Override
-	public List<EmailData> getAllEmail() {
-	return emailDataRepo.findAll();
+	public List<EmailData> getAllEmail(Long userId) {
+	return emailDataRepo.findByUserId(userId);
 	}
 
 }

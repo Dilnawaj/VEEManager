@@ -178,17 +178,18 @@ public void sendEmailForRegister(User user) throws UnsupportedEncodingException 
 
 			htmlContent = htmlContent.replace("{upi}", upi);
 			htmlContent = htmlContent.replace("{clientName}", user.getName());
-		saveDataToEmail( email,  upi,  user,subject);
+		saveDataToEmail( email,  upi,  user,subject,user.getUser().getUserId());
 			 EmailUtil.sendAttachmentEmail(session, user.getEmailAddress(), subject, htmlContent);
 		
 	}
 
-	private void saveDataToEmail(String email, String upi, Vendor user, String subject) {
+	private void saveDataToEmail(String email, String upi, Vendor user, String subject,Long userId) {
 		EmailData emailData = new EmailData();
 		emailData.setEmail(email);
 		emailData.setName(user.getName());
 		emailData.setSubject(subject);
 		emailData.setUpi(upi);
+		emailData.setUserId(userId);
 		emailDataRepo.save(emailData);
 		
 	}

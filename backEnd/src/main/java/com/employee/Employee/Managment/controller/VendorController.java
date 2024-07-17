@@ -58,7 +58,7 @@ public class VendorController {
 	}
 	@CrossOrigin
 	@GetMapping("/email")
-	public ResponseEntity<List<EmailData>> getAllEmailData() throws UnsupportedEncodingException {
-		 return ResponseEntity.ok(vendorService.getAllEmail());
+	public ResponseEntity<List<EmailData>> getAllEmailData(@RequestParam Long userId) throws UnsupportedEncodingException {
+		 return ResponseEntity.ok(vendorService.getAllEmail(userId));
 	}
 }

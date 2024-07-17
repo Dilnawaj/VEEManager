@@ -11,6 +11,8 @@ public class EmailData {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
 	
+	private Long userId;
+	
 	private String subject;
 	
 	private String name;
@@ -57,6 +59,14 @@ public class EmailData {
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+	public Long getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Long userId) {
+		this.userId = userId;
 	}
 	
 	

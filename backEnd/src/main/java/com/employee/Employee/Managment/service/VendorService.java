@@ -19,6 +19,6 @@ public interface VendorService {
 
 	void sharePost(ShareEmail shareEmail) throws UnsupportedEncodingException;
 
-	List<EmailData> getAllEmail();
+	List<EmailData> getAllEmail(Long userId);
 
 }
