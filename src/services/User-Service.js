@@ -127,8 +127,8 @@ export const shareVendors = (data) => {
     .then((response) => response.data);
 };
 
-export const emailData = () => {
+export const emailData = (userId) => {
   return myAxios
-    .get(BASE_URL + `vendor/email`)
+    .get(BASE_URL + `vendor/email?userId=${userId}`)
     .then((response) => response.data);
 };

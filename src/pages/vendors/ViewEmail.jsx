@@ -12,7 +12,7 @@ function ViewEmail() {
     }, []);
 
     function loadEmails() {
-        emailData()
+        emailData(localStorage.getItem("userId"))
             .then((response) => {
                 setEmails(response);
                 console.log("Emails data:", response);
