@@ -1,6 +1,6 @@
-# Blogging Application
+# Credmarg Application
 
-This is a full-stack application for managing and posting blogs. The app allows bloggers to post unlimited content and includes user functionalities such as downloading, subscribing, commenting, liking, and sharing.
+This is a full-stack application for managing vendors & employees.Admin can update,add and delete vendors and employees.Also Admin can view and send email to vendors.
 
 ## Prerequisites
 
@@ -9,11 +9,9 @@ Before running this application, ensure you have the following installed:
 ### Backend
 - JAVA
 - SpringBoot
-- Logger
 - MySQL
-- Redis
 - Swagger
-- JWT
+
 
 ### Frontend
 - React Js
@@ -25,7 +23,7 @@ Before running this application, ensure you have the following installed:
 
 To run the React app, follow these steps:
 
-1. Set up environment variables `REACT_APP_CLIENT_KEY` and `REACT_APP_API_KEY`.
+1. Set up environment variables `REACT_APP_CLIENT_KEY`
 2. Install dependencies:
    ```bash
    npm install --legacy-peer-deps
