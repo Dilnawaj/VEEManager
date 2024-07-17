@@ -126,12 +126,12 @@ function VendorList() {
             <Button color="info" size="lg" className="mr-2 mx-2">
               Back
             </Button>
-            <Button color="primary" size="lg" onClick={toggleEmailModal}>
+      
+          </Link>
+          <Button color="primary" size="lg" onClick={toggleEmailModal}>
           {"  "}
           Share
         </Button>
-          </Link>
-
           <Col md="auto">
             <h1 className="blogs-count-heading">
               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Vendor
@@ -180,11 +180,11 @@ function VendorList() {
               />
             ))}
             <Modal isOpen={isEmailModalOpen} toggle={toggleEmailModal}>
-              <ModalHeader toggle={toggleEmailModal}>Enter Name and UPI</ModalHeader>
+              <ModalHeader toggle={toggleEmailModal}>Enter Email and UPI</ModalHeader>
               <ModalBody>
                 <Input
                   type="text"
-                  placeholder="Enter name"
+                  placeholder="Enter email"
                   value={emailInput}
                   onChange={(e) => setEmailInput(e.target.value)}
                 />
