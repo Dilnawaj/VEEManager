@@ -272,11 +272,7 @@ console.log(1)
                         Signup
                       </Button>
                     </Link>
-                    <Link to="/forgotpassword">
-                      <Button color="dark" size="lg" className="mr-2 mx-2">
-                        Forgot Password
-                      </Button>
-                    </Link>
+                 
                   </div>
 
                   <div className="row px-3 or_box mt-4 d-flex justify-content-center">
