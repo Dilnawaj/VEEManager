@@ -22,17 +22,17 @@ function CustomNavbar() {
     setIsLogoutHovered(false);
   };
 
-  const logout = (sessionExpire) => {
-    console.log("Session", sessionExpire);
+  const logout = () => {
+    console.log("Session", );
     setTimeout(() => {
-      if (sessionExpire === true) {
-        toast.error("Session expired, Please do login again to continue using BloggerHub.", {
+     
+        toast.error("Session expired, Please do login again to continue using Credmarg.", {
           style: {
             width: "580px",
           },
           autoClose: 12000,
         });
-      }
+      
       doLogout(() => {
         console.log("LOGOUT");
         navigate("/");
