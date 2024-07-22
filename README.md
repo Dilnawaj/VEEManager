@@ -1,4 +1,4 @@
-# Credmarg Application
+# Vee Application
 
 This is a full-stack application for managing vendors & employees.Admin can update,add and delete vendors and employees.Also Admin can view and send email to vendors.
 

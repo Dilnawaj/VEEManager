@@ -103,7 +103,7 @@ public class EmailUtil {
            msg.addHeader("format", "flowed");
            msg.addHeader("Content-Transfer-Encoding", "8bit");
 
-           msg.setFrom(new InternetAddress("it.1703302@gmail.com", "Credmarg"));
+           msg.setFrom(new InternetAddress("it.1703302@gmail.com", "VeeManager"));
 
            msg.setReplyTo(InternetAddress.parse("it.1703302@gmail.com ", false));
 

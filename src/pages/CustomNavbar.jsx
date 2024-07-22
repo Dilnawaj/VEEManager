@@ -26,7 +26,7 @@ function CustomNavbar() {
     console.log("Session", );
     setTimeout(() => {
      
-        toast.error("Session expired, Please do login again to continue using Credmarg.", {
+        toast.error("Session expired, Please do login again to continue using VeeManager.", {
           style: {
             width: "580px",
           },
@@ -52,7 +52,7 @@ function CustomNavbar() {
             textAlign: 'center'
           }}
         >
-          CREDMARG
+          VeeManager
         </NavbarBrand>
         <Nav className="ml-auto" navbar>
           {isLoggedIn() && (
