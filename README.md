@@ -9,7 +9,7 @@ Before running this application, ensure you have the following installed:
 ### Backend
 - JAVA
 - SpringBoot
-- MySQL
+- MongoDB
 - Swagger
 
 
