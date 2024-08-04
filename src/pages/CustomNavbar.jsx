@@ -24,15 +24,7 @@ function CustomNavbar() {
 
   const logout = () => {
     console.log("Session", );
-    setTimeout(() => {
-     
-        toast.error("Session expired, Please do login again to continue using VeeManager.", {
-          style: {
-            width: "580px",
-          },
-          autoClose: 12000,
-        });
-      
+    setTimeout(() => {     
       doLogout(() => {
         console.log("LOGOUT");
         navigate("/");
