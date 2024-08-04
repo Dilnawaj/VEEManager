@@ -14,9 +14,9 @@ public interface UserService {
 
 	String signup(UserDto userDto) throws UnsupportedEncodingException;
 
-	UserDto getUserDetails(Long userId);
+	UserDto getUserDetails(String userId);
 	
-	String deleteUser(Long userId);
+	String deleteUser(String userId);
 
 String  googleSignUp(String code) throws GeneralSecurityException, IOException;
 

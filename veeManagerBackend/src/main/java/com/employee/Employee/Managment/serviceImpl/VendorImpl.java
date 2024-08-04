@@ -38,8 +38,8 @@ public class VendorImpl implements VendorService{
 	
 	private ModelMapper modelMapper = new ModelMapper();
 	@Override
-	public String addVendor(VendorDto vendorDto, Long userId) {
-		Optional<User> userOpt = userRepo.findById(userId);
+	public String addVendor(VendorDto vendorDto, String userId) {
+		Optional<User> userOpt = userRepo.findById(userId.toString());
 		if (userOpt.isPresent()) {
 
 			Optional<Vendor> vendorOpt = vendorRepo.findByEmailAddress(vendorDto.getEmailAddress());
@@ -58,8 +58,8 @@ public class VendorImpl implements VendorService{
 	}
 
 	@Override
-	public String deleteVendor(Long vendorId) {
-		Optional<Vendor> vendorOpt = vendorRepo.findById(vendorId);
+	public String deleteVendor(String vendorId) {
+		Optional<Vendor> vendorOpt = vendorRepo.findById(vendorId.toString());
 		if (vendorOpt.isPresent()) {
 			vendorRepo.delete(vendorOpt.get());
 			JSONObject json = new JSONObject();
@@ -69,8 +69,8 @@ public class VendorImpl implements VendorService{
 	}
 
 	@Override
-	public VendorDto getVendor(Long vendorId) {
-		Optional<Vendor> vendorOpt = vendorRepo.findById(vendorId);
+	public VendorDto getVendor(String vendorId) {
+		Optional<Vendor> vendorOpt = vendorRepo.findById(vendorId.toString());
 
 		if (vendorOpt.isPresent()) {
 			return this.modelMapper.map(vendorOpt.get(), VendorDto.class);
@@ -80,8 +80,8 @@ public class VendorImpl implements VendorService{
 	}
 
 	@Override
-	public String updateVendor(VendorDto vendorDto, Long userId, Long vendorId) {
-		Optional<Vendor> vendorOpt = vendorRepo.findById(vendorId);
+	public String updateVendor(VendorDto vendorDto, String userId, String vendorId) {
+		Optional<Vendor> vendorOpt = vendorRepo.findById(vendorId.toString());
 		if (vendorOpt.isPresent()) {
 			Vendor vendor = vendorOpt.get();
 			
@@ -117,7 +117,7 @@ public class VendorImpl implements VendorService{
 	}
 
 	@Override
-	public List<EmailData> getAllEmail(Long userId) {
+	public List<EmailData> getAllEmail(String userId) {
 	return emailDataRepo.findByUserId(userId);
 	}
 

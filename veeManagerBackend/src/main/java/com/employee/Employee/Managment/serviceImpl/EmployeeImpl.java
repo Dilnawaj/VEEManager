@@ -29,9 +29,9 @@ public class EmployeeImpl implements EmployeeService {
 	private ModelMapper modelMapper = new ModelMapper();
 
 	@Override
-	public String addEmployee(EmployeeDto employeeDto, Long userId) {
+	public String addEmployee(EmployeeDto employeeDto, String userId) {
 
-		Optional<User> userOpt = userRepo.findById(userId);
+		Optional<User> userOpt = userRepo.findById(userId.toString());
 		if (userOpt.isPresent()) {
 
 			Optional<Employee> employeeOpt = employeeRepo.findByEmailAddress(employeeDto.getEmailAddress());
@@ -50,8 +50,8 @@ public class EmployeeImpl implements EmployeeService {
 	}
 
 	@Override
-	public String updateEmployee(EmployeeDto employeeDto, Long userId,Long employeeId) {
-		Optional<Employee> employeeOpt = employeeRepo.findById(employeeId);
+	public String updateEmployee(EmployeeDto employeeDto, String userId,String employeeId) {
+		Optional<Employee> employeeOpt = employeeRepo.findById(employeeId.toString());
 		if (employeeOpt.isPresent()) {
 			Employee employee = employeeOpt.get();
 			employee.setCtc(employeeDto.getCtc());
@@ -66,8 +66,8 @@ public class EmployeeImpl implements EmployeeService {
 	}
 
 	@Override
-	public EmployeeDto getEmployee(Long employeeId) {
-		Optional<Employee> employeeOpt = employeeRepo.findById(employeeId);
+	public EmployeeDto getEmployee(String employeeId) {
+		Optional<Employee> employeeOpt = employeeRepo.findById(employeeId.toString());
 
 		if (employeeOpt.isPresent()) {
 			return this.modelMapper.map(employeeOpt.get(), EmployeeDto.class);
@@ -77,8 +77,8 @@ public class EmployeeImpl implements EmployeeService {
 	}
 
 	@Override
-	public String deleteEmployee(Long employeeId) {
-		Optional<Employee> employeeOpt = employeeRepo.findById(employeeId);
+	public String deleteEmployee(String employeeId) {
+		Optional<Employee> employeeOpt = employeeRepo.findById(employeeId.toString());
 		if (employeeOpt.isPresent()) {
 			employeeRepo.delete(employeeOpt.get());
 			JSONObject json = new JSONObject();

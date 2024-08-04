@@ -1,21 +1,17 @@
 package com.employee.Employee.Managment.entities;
 
-import java.util.ArrayList;
 
-import java.util.List;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-@Entity
+
+@Document(collection = "Employee")
 public class Employee {
 	
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	private Long id;
+	private String id;
 	
 	private String name;
 
@@ -26,14 +22,16 @@ public class Employee {
 	private Long ctc;
 	
 	private String manager;
-	@ManyToOne
+	 @DBRef
 	private User user;
 	
-	public Long getId() {
+
+
+	public String getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 

@@ -1,17 +1,17 @@
 package com.employee.Employee.Managment.entities;
 
-import jakarta.persistence.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-@Entity
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+@Document(collection="User")
 public class User {
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	 @Column(name = "userId")
-	private Long userId;
+	private String userId;
 	
 	private String name;
 
@@ -30,17 +30,17 @@ public class User {
 
 	private boolean isPasswordSet;
 	
-	@OneToMany(mappedBy="user",cascade=CascadeType.ALL,fetch = FetchType.LAZY)
+	@DBRef
 	private List<Employee> employee = new ArrayList<>();
 	
-	@OneToMany(mappedBy="user",cascade=CascadeType.ALL,fetch = FetchType.LAZY)
+	@DBRef
 	private List<Vendor> vendor = new ArrayList<>();
 
-	public Long getUserId() {
+	public String getUserId() {
 		return userId;
 	}
 
-	public void setUserId(Long userId) {
+	public void setUserId(String userId) {
 		this.userId = userId;
 	}
 

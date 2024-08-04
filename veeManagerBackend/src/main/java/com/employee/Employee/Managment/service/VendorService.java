@@ -9,16 +9,16 @@ import com.employee.Employee.Managment.model.VendorDto;
 
 public interface VendorService {
 
-	String addVendor(VendorDto vendorDto, Long userId);
+	String addVendor(VendorDto vendorDto, String userId);
 
-	String deleteVendor(Long vendorId);
+	String deleteVendor(String vendorId);
 
-	VendorDto getVendor(Long vendorId);
+	VendorDto getVendor(String vendorId);
 
-	String updateVendor(VendorDto vendorDto, Long userId, Long vendorId);
+	String updateVendor(VendorDto vendorDto, String userId, String vendorId);
 
 	void sharePost(ShareEmail shareEmail) throws UnsupportedEncodingException;
 
-	List<EmailData> getAllEmail(Long userId);
+	List<EmailData> getAllEmail(String userId);
 
 }

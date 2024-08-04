@@ -4,11 +4,11 @@ import com.employee.Employee.Managment.model.EmployeeDto;
 
 public interface EmployeeService {
 
-	String addEmployee(EmployeeDto employeeDto, Long userId);
+	String addEmployee(EmployeeDto employeeDto, String userId);
 
-	String updateEmployee(EmployeeDto employeeDto, Long userId, Long employeeId);
+	String updateEmployee(EmployeeDto employeeDto, String userId, String employeeId);
 
-	EmployeeDto getEmployee(Long employeeId);
+	EmployeeDto getEmployee(String employeeId);
 
-	String deleteEmployee(Long employeeId);
+	String deleteEmployee(String employeeId);
 }

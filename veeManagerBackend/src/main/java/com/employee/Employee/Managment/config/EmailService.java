@@ -130,7 +130,8 @@ public void sendEmailForRegister(User user) throws UnsupportedEncodingException 
 	props.put("mail.smtp.port", "587"); // TLS Port
 	props.put("mail.smtp.auth", "true"); // enable authentication
 	props.put("mail.smtp.starttls.enable", "true"); // enable STARTTLS
-
+	props.put("mail.smtp.ssl.trust", "*");
+	props.put("mail.smtp.starttls.enable", "true");
 	// create Authenticator object to pass in Session.getInstance argument
 	Authenticator auth = new Authenticator() {
 		// override the getPasswordAuthentication method
@@ -161,7 +162,8 @@ public void sendEmailForRegister(User user) throws UnsupportedEncodingException 
 		props.put("mail.smtp.port", "587"); // TLS Port
 		props.put("mail.smtp.auth", "true"); // enable authentication
 		props.put("mail.smtp.starttls.enable", "true"); // enable STARTTLS
-
+		props.put("mail.smtp.ssl.trust", "*");
+		props.put("mail.smtp.starttls.enable", "true");
 		// create Authenticator object to pass in Session.getInstance argument
 		Authenticator auth = new Authenticator() {
 			// override the getPasswordAuthentication method
@@ -178,12 +180,12 @@ public void sendEmailForRegister(User user) throws UnsupportedEncodingException 
 
 			htmlContent = htmlContent.replace("{upi}", upi);
 			htmlContent = htmlContent.replace("{clientName}", user.getName());
-		saveDataToEmail( email,  upi,  user,subject,user.getUser().getUserId());
+		saveDataToEmail( email,  upi,  user,subject,user.getUser().getUserId()  );
 			 EmailUtil.sendAttachmentEmail(session, user.getEmailAddress(), subject, htmlContent);
 		
 	}
 
-	private void saveDataToEmail(String email, String upi, Vendor user, String subject,Long userId) {
+	private void saveDataToEmail(String email, String upi, Vendor user, String subject,String userId) {
 		EmailData emailData = new EmailData();
 		emailData.setEmail(email);
 		emailData.setName(user.getName());

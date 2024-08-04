@@ -65,11 +65,11 @@ public class UserController {
 	}
 
 	@GetMapping(value = "/{userId}", produces = "application/json")
-	ResponseEntity<UserDto> loginUser(@PathVariable Long userId) {
+	ResponseEntity<UserDto> loginUser(@PathVariable String userId) {
 		return ResponseEntity.ok(userService.getUserDetails(userId));
 	}
 	@DeleteMapping("/{userId}")
-	ResponseEntity<String> deleteUser(@PathVariable Long userId) {
+	ResponseEntity<String> deleteUser(@PathVariable String userId) {
 		return ResponseEntity.ok(userService.deleteUser(userId));
 	}
 	

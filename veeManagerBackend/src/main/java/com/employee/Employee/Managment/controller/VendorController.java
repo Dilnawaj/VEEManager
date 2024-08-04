@@ -31,23 +31,23 @@ public class VendorController {
 	private VendorService vendorService;
 
 	@PostMapping("add/{userId}")
-	ResponseEntity<String> addVendor(@RequestBody VendorDto vendorDto, @PathVariable Long userId) {
+	ResponseEntity<String> addVendor(@RequestBody VendorDto vendorDto, @PathVariable String userId) {
 		return ResponseEntity.ok(vendorService.addVendor(vendorDto, userId));
 	}
 
 	@PutMapping("/update")
-	ResponseEntity<String> updateVendor(@RequestBody VendorDto vendorDto, @RequestParam Long userId,@RequestParam Long vendorId) {
+	ResponseEntity<String> updateVendor(@RequestBody VendorDto vendorDto, @RequestParam String userId,@RequestParam String vendorId) {
 		return ResponseEntity.ok(vendorService.updateVendor(vendorDto, userId,vendorId));
 	}
 
 
 	@GetMapping("/{vendorId}")
-	ResponseEntity<VendorDto> getVendor(@PathVariable Long vendorId) {
+	ResponseEntity<VendorDto> getVendor(@PathVariable String vendorId) {
 		return ResponseEntity.ok(vendorService.getVendor(vendorId));
 	}
 
 	@DeleteMapping("/{vendorId}")
-	ResponseEntity<String> deleteVendor(@PathVariable Long vendorId) {
+	ResponseEntity<String> deleteVendor(@PathVariable String vendorId) {
 		return ResponseEntity.ok(vendorService.deleteVendor(vendorId));
 	}
 	@CrossOrigin
@@ -58,7 +58,7 @@ public class VendorController {
 	}
 	@CrossOrigin
 	@GetMapping("/email")
-	public ResponseEntity<List<EmailData>> getAllEmailData(@RequestParam Long userId) throws UnsupportedEncodingException {
+	public ResponseEntity<List<EmailData>> getAllEmailData(@RequestParam String userId) throws UnsupportedEncodingException {
 		 return ResponseEntity.ok(vendorService.getAllEmail(userId));
 	}
 }

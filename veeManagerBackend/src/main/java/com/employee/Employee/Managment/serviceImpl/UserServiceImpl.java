@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.json.JSONObject;
 import org.modelmapper.ModelMapper;
@@ -27,11 +28,17 @@ import org.springframework.stereotype.Service;
 import com.employee.Employee.Managment.config.EmailService;
 import com.employee.Employee.Managment.config.EmailUtil;
 import com.employee.Employee.Managment.config.JavaHelper;
+import com.employee.Employee.Managment.entities.Employee;
 import com.employee.Employee.Managment.entities.User;
+import com.employee.Employee.Managment.entities.Vendor;
 import com.employee.Employee.Managment.exception.BadRequestException;
+import com.employee.Employee.Managment.model.EmployeeDto;
 import com.employee.Employee.Managment.model.LoginModel;
 import com.employee.Employee.Managment.model.UserDto;
+import com.employee.Employee.Managment.model.VendorDto;
+import com.employee.Employee.Managment.repos.EmployeeRepo;
 import com.employee.Employee.Managment.repos.UserRepo;
+import com.employee.Employee.Managment.repos.VendorRepo;
 import com.employee.Employee.Managment.service.UserService;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
@@ -46,14 +53,21 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	private UserRepo userRepo;
+
+	@Autowired
+	private EmployeeRepo employeeRepo;
+
+	@Autowired
+	private VendorRepo vendorRepo;
+
 	@Autowired
 	private EmailService emailService;
-	
+
 	@Value("${clientId}")
 	private String clientId;
-	
+
 	@Override
-	public String getLoginUser(UserDto userDto,boolean isValidate) {
+	public String getLoginUser(UserDto userDto, boolean isValidate) {
 
 		if (userDto.isValidLogin() || !isValidate) {
 			userDto.setEmail(userDto.getEmail().trim().toLowerCase());
@@ -63,8 +77,8 @@ public class UserServiceImpl implements UserService {
 				throw BadRequestException.of("Invalid email address");
 			}
 
-			
-			if (   (!isValidate)  ||   (JavaHelper.checkPassword(userDto.getPassword(), userOpt.get().getPassword(), isValidate))   ) {
+			if ((!isValidate)
+					|| (JavaHelper.checkPassword(userDto.getPassword(), userOpt.get().getPassword(), isValidate))) {
 				JSONObject json = new JSONObject();
 				return json.put("id", userOpt.get().getUserId()).toString();
 			}
@@ -75,16 +89,21 @@ public class UserServiceImpl implements UserService {
 
 	}
 
-
-	public UserDto getUserDetails(Long userId) {
-		Optional<User> userOptional = userRepo.findById(userId);
+	public UserDto getUserDetails(String userId) {
+		Optional<User> userOptional = userRepo.findById(userId.toString());
 		UserDto userDto = new UserDto();
 		if (userOptional.isPresent()) {
 			User user = userOptional.get();
 			userDto = this.modelMapper.map(user, UserDto.class);
+			userDto.setEmployee(employeeRepo.findByUser(user).stream()
+					.map(e -> this.modelMapper.map(e, EmployeeDto.class)).collect(Collectors.toList()));
+
+			userDto.setVendor(vendorRepo.findByUser(user).stream().map(e -> this.modelMapper.map(e, VendorDto.class))
+					.collect(Collectors.toList()));
 		}
 		return userDto;
 	}
+
 	public String getFreshVerificationCode() {
 		String verificationCode = getVerificationCode();
 		List<User> users = userRepo.findByVerificationCode(verificationCode);
@@ -100,6 +119,7 @@ public class UserServiceImpl implements UserService {
 		}
 		return verificationCode;
 	}
+
 	public String getVerificationCode() {
 		String alphaNumericString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" + "*@" + "0123456789" + "abcdefghijklmnopqrstuvwxyz";
 		StringBuilder sb = new StringBuilder(20);
@@ -112,10 +132,10 @@ public class UserServiceImpl implements UserService {
 
 		return sb.toString();
 	}
-	
+
 	@Override
-	public  String deleteUser(Long userId) {
-		Optional<User> userOpt = userRepo.findById(userId);
+	public String deleteUser(String userId) {
+		Optional<User> userOpt = userRepo.findById(userId.toString());
 		if (userOpt.isPresent()) {
 			userRepo.delete(userOpt.get());
 			JSONObject json = new JSONObject();
@@ -123,6 +143,7 @@ public class UserServiceImpl implements UserService {
 		}
 		throw BadRequestException.of("Employee does not exsist");
 	}
+
 	@Override
 	public String signup(UserDto userDto) throws UnsupportedEncodingException {
 
@@ -132,14 +153,12 @@ public class UserServiceImpl implements UserService {
 			if (userOpt.isPresent()) {
 				throw BadRequestException.of("User already exist");
 			}
-	
+
 			User user = this.modelMapper.map(userDto, User.class);
 			user.setVerificationCode(getFreshVerificationCode());
-			if (userDto.getPassword()==null ) {
+			if (userDto.getPassword() == null) {
 				emailService.sendEmailForRegister(user);
-			}
-			else
-			{
+			} else {
 				user.setPasswordSet(true);
 			}
 			user.setLinkExpiryDate(JavaHelper.getCurrentDate().toString());
@@ -149,6 +168,7 @@ public class UserServiceImpl implements UserService {
 		}
 		throw BadRequestException.of("Please check your input credentials");
 	}
+
 	public String googleSignUp(String code) throws GeneralSecurityException, IOException {
 		if (code != null) {
 			// 30-June-2022 @manish get id token from credential
@@ -212,13 +232,9 @@ public class UserServiceImpl implements UserService {
 			}
 			throw BadRequestException.of("The link has already been used. Please try to reset your password again.");
 
-
 		}
 		throw BadRequestException.of("Invalid credentials");
 	}
-
-	
-
 
 	@Override
 	public String getEmailFromGoogleAccessToken(String code) throws GeneralSecurityException, IOException {
@@ -241,7 +257,6 @@ public class UserServiceImpl implements UserService {
 		return "";
 	}
 
-
 	@Override
 	public String getLoginUser(String email, boolean isValiddate) {
 		UserDto userDto = new UserDto();
@@ -249,14 +264,10 @@ public class UserServiceImpl implements UserService {
 		return getLoginUser(userDto, false);
 	}
 
-
 	public InputStream getResource(String path, String fileName) throws FileNotFoundException {
 		String fullPath = path + File.separator + fileName;
 		return new FileInputStream(fullPath);
 
 	}
-
-	
-
 
 }
