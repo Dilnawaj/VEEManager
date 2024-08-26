@@ -186,7 +186,6 @@ public class UserServiceImpl implements UserService {
             }
             user.setLinkExpiryDate(JavaHelper.getCurrentDate().toString());
             userRepo.save(user);
-System.out.println(user.getUserId());
             // Store user in Hazelcast map
             userMap.put(user.getUserId(), user);
 
