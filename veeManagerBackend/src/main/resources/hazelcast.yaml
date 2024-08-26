@@ -5,5 +5,5 @@ hazelcast:
         enabled: true
   map:
     default:
-      time-to-live-seconds: 30
+      time-to-live-seconds: 60
     
