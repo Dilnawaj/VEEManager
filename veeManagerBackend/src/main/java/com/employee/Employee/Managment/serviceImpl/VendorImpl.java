@@ -30,8 +30,9 @@ import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.map.IMap;
 
 import jakarta.annotation.PostConstruct;
+
 @Service
-public class VendorImpl implements VendorService{
+public class VendorImpl implements VendorService {
 	@Autowired
 	private UserRepo userRepo;
 
@@ -41,22 +42,21 @@ public class VendorImpl implements VendorService{
 	private EmailService emailService;
 	@Autowired
 	private EmailDataRepo emailDataRepo;
-	
+
 	private ModelMapper modelMapper = new ModelMapper();
-	
-	  private static final String MAP_NAME = "vendor-map";
 
-	    @Autowired
-	    private HazelcastInstance hazelcastInstance;
+	private static final String MAP_NAME = "vendor-map";
 
+	@Autowired
+	private HazelcastInstance hazelcastInstance;
 
-	    private IMap<String, Vendor> vendorMap;
+	private IMap<String, Vendor> vendorMap;
 
-	    @PostConstruct
-	    public void init() {
-	    	vendorMap = hazelcastInstance.getMap(MAP_NAME);
-	    }
-	
+	@PostConstruct
+	public void init() {
+		vendorMap = hazelcastInstance.getMap(MAP_NAME);
+	}
+
 	@Override
 	public void addVendor(VendorDto vendorDto, String userId) {
 		Optional<User> userOpt = userRepo.findById(userId.toString());
@@ -69,8 +69,8 @@ public class VendorImpl implements VendorService{
 				vendor.setUser(userOpt.get());
 				vendor = vendorRepo.save(vendor);
 				JSONObject json = new JSONObject();
-				 vendorMap.put(vendor.getId(), vendor);
-				return ;
+				vendorMap.put(vendor.getId(), vendor);
+				return;
 			}
 			throw BadRequestException.of("Vendor already exsist.");
 		}
@@ -92,12 +92,11 @@ public class VendorImpl implements VendorService{
 
 	@Override
 	public VendorDto getVendor(String vendorId) {
-		
-		if(vendorMap.get(vendorId)!=null)
-		{
+
+		if (vendorMap.get(vendorId) != null) {
 			return this.modelMapper.map(vendorMap.get(vendorId), VendorDto.class);
 		}
-		
+
 		Optional<Vendor> vendorOpt = vendorRepo.findById(vendorId.toString());
 
 		if (vendorOpt.isPresent()) {
@@ -112,42 +111,40 @@ public class VendorImpl implements VendorService{
 		Optional<Vendor> vendorOpt = vendorRepo.findById(vendorId.toString());
 		if (vendorOpt.isPresent()) {
 			Vendor vendor = vendorOpt.get();
-			
+
 			vendor.setUpi(vendorDto.getUpi());
 			vendor.setEmailAddress(vendorDto.getEmailAddress());
 			vendor.setName(vendorDto.getName());
 			vendorRepo.save(vendor);
 
-			 vendorMap.put(vendor.getId(), vendor);
-			 return;
+			vendorMap.put(vendor.getId(), vendor);
+			return;
 		}
 		throw BadRequestException.of("Vendor does not exsist");
 	}
 
 	@Async
 	public void sharePost(ShareEmail shareEmail) throws UnsupportedEncodingException {
-		
-		Map<String,String> emailAndUpi=  shareEmail.getEmails().stream().collect(Collectors.toMap(e->e.getEmail(),e->e.getUpi()));
-		
 
-	    for (Map.Entry<String, String> entry : emailAndUpi.entrySet()) {
-	    	String email = entry.getKey();
-	    	Optional<Vendor> vendorOpt= vendorRepo.findByEmailAddress(email);
-	        
-	       if(!vendorOpt.isEmpty())
-	       {
+		Map<String, String> emailAndUpi = shareEmail.getEmails().stream()
+				.collect(Collectors.toMap(e -> e.getEmail(), e -> e.getUpi()));
 
-		        String upi = entry.getValue();
-		        emailService.sendEmailForVendors(email,upi,vendorOpt.get());
-	       }
-	    }
-		
-		
+		for (Map.Entry<String, String> entry : emailAndUpi.entrySet()) {
+			String email = entry.getKey();
+			Optional<Vendor> vendorOpt = vendorRepo.findByEmailAddress(email);
+
+			if (!vendorOpt.isEmpty()) {
+
+				String upi = entry.getValue();
+				emailService.sendEmailForVendors(email, upi, vendorOpt.get());
+			}
+		}
+
 	}
 
 	@Override
 	public List<EmailData> getAllEmail(String userId) {
-	return emailDataRepo.findByUserId(userId);
+		return emailDataRepo.findByUserId(userId);
 	}
 
 }

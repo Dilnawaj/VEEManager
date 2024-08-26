@@ -52,17 +52,17 @@ import jakarta.annotation.PostConstruct;
 
 @Service
 public class UserServiceImpl implements UserService {
-	   private static final String MAP_NAME = "user-map";
+	private static final String MAP_NAME = "user-map";
 
-	    @Autowired
-	    private HazelcastInstance hazelcastInstance;
+	@Autowired
+	private HazelcastInstance hazelcastInstance;
 
-	    private IMap<String, User>userMap;
-	    
-	    @PostConstruct
-	    public void init() {
-	    	userMap = hazelcastInstance.getMap(MAP_NAME);
-	    }
+	private IMap<String, User> userMap;
+
+	@PostConstruct
+	public void init() {
+		userMap = hazelcastInstance.getMap(MAP_NAME);
+	}
 
 	private ModelMapper modelMapper = new ModelMapper();
 
@@ -105,13 +105,11 @@ public class UserServiceImpl implements UserService {
 	}
 
 	public UserDto getUserDetails(String userId) {
-		
-		if(userMap.get(userId)!=null)
-		{
+
+		if (userMap.get(userId) != null) {
 			return this.modelMapper.map(userMap.get(userId), UserDto.class);
 		}
-		
-		 
+
 		Optional<User> userOptional = userRepo.findById(userId.toString());
 		UserDto userDto = new UserDto();
 		if (userOptional.isPresent()) {
@@ -161,43 +159,41 @@ public class UserServiceImpl implements UserService {
 		if (userOpt.isPresent()) {
 			userRepo.delete(userOpt.get());
 			JSONObject json = new JSONObject();
-			 userMap.remove(userId);
+			userMap.remove(userId);
 			return json.put("message", "Employee deleted  successfully.").toString();
 		}
 		throw BadRequestException.of("Employee does not exsist");
 	}
 
-    @Override
-    public void signup(UserDto userDto) throws UnsupportedEncodingException {
+	@Override
+	public void signup(UserDto userDto) throws UnsupportedEncodingException {
 
-        if (userDto.isValid()) {
-            userDto.setEmail(userDto.getEmail().trim().toLowerCase());
-            Optional<User> userOpt = userRepo.findByEmail(userDto.getEmail());
-            if (userOpt.isPresent()) {
-                throw BadRequestException.of("User already exists");
-            }
+		if (userDto.isValid()) {
+			userDto.setEmail(userDto.getEmail().trim().toLowerCase());
+			Optional<User> userOpt = userRepo.findByEmail(userDto.getEmail());
+			if (userOpt.isPresent()) {
+				throw BadRequestException.of("User already exists");
+			}
 
-            User user = this.modelMapper.map(userDto, User.class);
-            user.setVerificationCode(getFreshVerificationCode());
-            if (userDto.getPassword() == null) {
-                emailService.sendEmailForRegister(user);
-            } else {
-                user.setPasswordSet(true);
-            }
-            user.setLinkExpiryDate(JavaHelper.getCurrentDate().toString());
-            userRepo.save(user);
-            // Store user in Hazelcast map
-            userMap.put(user.getUserId(), user);
+			User user = this.modelMapper.map(userDto, User.class);
+			user.setVerificationCode(getFreshVerificationCode());
+			if (userDto.getPassword() == null) {
+				emailService.sendEmailForRegister(user);
+			} else {
+				user.setPasswordSet(true);
+			}
+			user.setLinkExpiryDate(JavaHelper.getCurrentDate().toString());
+			userRepo.save(user);
+			// Store user in Hazelcast map
+			userMap.put(user.getUserId(), user);
 
-            JSONObject json = new JSONObject();
-         
-        }
-        else
-        {
-        	throw BadRequestException.of("Please check your input credentials");
-        }
-        
-    }
+			JSONObject json = new JSONObject();
+
+		} else {
+			throw BadRequestException.of("Please check your input credentials");
+		}
+
+	}
 
 	public void googleSignUp(String code) throws GeneralSecurityException, IOException {
 		if (code != null) {
