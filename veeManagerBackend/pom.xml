@@ -23,6 +23,11 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-data-mongodb</artifactId>
     </dependency>
+    <dependency>
+    <groupId>com.hazelcast</groupId>
+    <artifactId>hazelcast-spring</artifactId>
+    <version>5.0.2</version> <!-- Adjust the version to match your Spring Boot version -->
+</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>

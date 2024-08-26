@@ -26,12 +26,14 @@ public class EmployeeController {
 
 	@PostMapping("add/{userId}")
 	ResponseEntity<String> addEmployee(@RequestBody EmployeeDto employeeDto, @PathVariable String userId) {
-		return ResponseEntity.ok(employeeService.addEmployee(employeeDto, userId));
+		employeeService.addEmployee(employeeDto, userId);
+		return ResponseEntity.ok("");
 	}
 
 	@PutMapping("/update")
 	ResponseEntity<String> updateEmployee(@RequestBody EmployeeDto employeeDto, @RequestParam String userId,@RequestParam String employeeId) {
-		return ResponseEntity.ok(employeeService.updateEmployee(employeeDto, userId,employeeId));
+		employeeService.updateEmployee(employeeDto, userId,employeeId);
+		return ResponseEntity.ok("");
 	}
 
 

@@ -13,12 +13,30 @@ import com.employee.Employee.Managment.entities.Employee;
 import com.employee.Employee.Managment.entities.User;
 import com.employee.Employee.Managment.exception.BadRequestException;
 import com.employee.Employee.Managment.model.EmployeeDto;
+import com.employee.Employee.Managment.model.UserDto;
 import com.employee.Employee.Managment.repos.EmployeeRepo;
 import com.employee.Employee.Managment.repos.UserRepo;
 import com.employee.Employee.Managment.service.EmployeeService;
+import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.map.IMap;
+
+import jakarta.annotation.PostConstruct;
 
 @Service
 public class EmployeeImpl implements EmployeeService {
+	
+	  private static final String MAP_NAME = "employee-map";
+
+	    @Autowired
+	    private HazelcastInstance hazelcastInstance;
+
+
+	    private IMap<String, Employee> employeeMap;
+
+	    @PostConstruct
+	    public void init() {
+	        employeeMap = hazelcastInstance.getMap(MAP_NAME);
+	    }
 
 	@Autowired
 	private UserRepo userRepo;
@@ -29,7 +47,7 @@ public class EmployeeImpl implements EmployeeService {
 	private ModelMapper modelMapper = new ModelMapper();
 
 	@Override
-	public String addEmployee(EmployeeDto employeeDto, String userId) {
+	public void addEmployee(EmployeeDto employeeDto, String userId) {
 
 		Optional<User> userOpt = userRepo.findById(userId.toString());
 		if (userOpt.isPresent()) {
@@ -40,8 +58,8 @@ public class EmployeeImpl implements EmployeeService {
 				employee.setManager(userOpt.get().getName());
 				employee.setUser(userOpt.get());
 				employee = employeeRepo.save(employee);
-				JSONObject json = new JSONObject();
-				return json.put("message", "Employee created successfully.").toString();
+				 employeeMap.put(employee.getId(), employee);
+				return ;
 			}
 			throw BadRequestException.of("Employee already exsist.");
 		}
@@ -50,7 +68,7 @@ public class EmployeeImpl implements EmployeeService {
 	}
 
 	@Override
-	public String updateEmployee(EmployeeDto employeeDto, String userId,String employeeId) {
+	public void updateEmployee(EmployeeDto employeeDto, String userId,String employeeId) {
 		Optional<Employee> employeeOpt = employeeRepo.findById(employeeId.toString());
 		if (employeeOpt.isPresent()) {
 			Employee employee = employeeOpt.get();
@@ -59,14 +77,18 @@ public class EmployeeImpl implements EmployeeService {
 			employee.setEmailAddress(employeeDto.getEmailAddress());
 			employee.setName(employeeDto.getName());
 			employeeRepo.save(employee);
-			JSONObject json = new JSONObject();
-			return json.put("message", "Employee updated  successfully.").toString();
+		 employeeMap.put(employee.getId(), employee);
+			return ;
 		}
 		throw BadRequestException.of("Employee does not exsist");
 	}
 
 	@Override
 	public EmployeeDto getEmployee(String employeeId) {
+		if(employeeMap.get(employeeId)!=null)
+		{
+			return this.modelMapper.map(employeeMap.get(employeeId), EmployeeDto.class);
+		}
 		Optional<Employee> employeeOpt = employeeRepo.findById(employeeId.toString());
 
 		if (employeeOpt.isPresent()) {
@@ -82,6 +104,7 @@ public class EmployeeImpl implements EmployeeService {
 		if (employeeOpt.isPresent()) {
 			employeeRepo.delete(employeeOpt.get());
 			JSONObject json = new JSONObject();
+			 employeeMap.remove(employeeId);
 			return json.put("message", "Employee deleted  successfully.").toString();
 		}
 		throw BadRequestException.of("Employee does not exsist");

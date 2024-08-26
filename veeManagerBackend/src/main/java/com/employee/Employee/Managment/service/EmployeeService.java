@@ -4,9 +4,9 @@ import com.employee.Employee.Managment.model.EmployeeDto;
 
 public interface EmployeeService {
 
-	String addEmployee(EmployeeDto employeeDto, String userId);
+	void addEmployee(EmployeeDto employeeDto, String userId);
 
-	String updateEmployee(EmployeeDto employeeDto, String userId, String employeeId);
+	void updateEmployee(EmployeeDto employeeDto, String userId, String employeeId);
 
 	EmployeeDto getEmployee(String employeeId);
 

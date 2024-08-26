@@ -1,11 +1,13 @@
 package com.employee.Employee.Managment.entities;
 
+import java.io.Serializable;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection="Vendor")
-public class Vendor {
+public class Vendor implements Serializable{
 	@Id
 	private String id;
 	
@@ -21,7 +23,7 @@ public class Vendor {
 	@DBRef
 	private User user;
 
-
+	private static final long serialVersionUID = -3515756744958077422L;
 	public String getId() {
 		return id;
 	}

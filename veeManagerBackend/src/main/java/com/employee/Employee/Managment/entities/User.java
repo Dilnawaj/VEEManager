@@ -1,6 +1,7 @@
 package com.employee.Employee.Managment.entities;
 
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,7 +10,7 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection="User")
-public class User {
+public class User  implements Serializable{
 	@Id
 	private String userId;
 	
@@ -26,7 +27,7 @@ public class User {
 	private String verificationCode;
 
 	private String linkExpiryDate;
-	
+	private static final long serialVersionUID = -3565756744958077422L;
 
 	private boolean isPasswordSet;
 	

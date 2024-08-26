@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 
 @Document(collection = "Employee")
-public class Employee {
+public class Employee implements Serializable{
 	
 	@Id
 	private String id;
@@ -26,7 +26,7 @@ public class Employee {
 	private User user;
 	
 
-
+		private static final long serialVersionUID = -3565756744958077402L;
 	public String getId() {
 		return id;
 	}

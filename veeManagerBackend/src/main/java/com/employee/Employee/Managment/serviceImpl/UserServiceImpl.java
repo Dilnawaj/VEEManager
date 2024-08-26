@@ -45,9 +45,24 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken.Payload;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
+import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.map.IMap;
+
+import jakarta.annotation.PostConstruct;
 
 @Service
 public class UserServiceImpl implements UserService {
+	   private static final String MAP_NAME = "user-map";
+
+	    @Autowired
+	    private HazelcastInstance hazelcastInstance;
+
+	    private IMap<String, User>userMap;
+	    
+	    @PostConstruct
+	    public void init() {
+	    	userMap = hazelcastInstance.getMap(MAP_NAME);
+	    }
 
 	private ModelMapper modelMapper = new ModelMapper();
 
@@ -90,6 +105,13 @@ public class UserServiceImpl implements UserService {
 	}
 
 	public UserDto getUserDetails(String userId) {
+		
+		if(userMap.get(userId)!=null)
+		{
+			return this.modelMapper.map(userMap.get(userId), UserDto.class);
+		}
+		
+		 
 		Optional<User> userOptional = userRepo.findById(userId.toString());
 		UserDto userDto = new UserDto();
 		if (userOptional.isPresent()) {
@@ -139,37 +161,46 @@ public class UserServiceImpl implements UserService {
 		if (userOpt.isPresent()) {
 			userRepo.delete(userOpt.get());
 			JSONObject json = new JSONObject();
+			 userMap.remove(userId);
 			return json.put("message", "Employee deleted  successfully.").toString();
 		}
 		throw BadRequestException.of("Employee does not exsist");
 	}
 
-	@Override
-	public String signup(UserDto userDto) throws UnsupportedEncodingException {
+    @Override
+    public void signup(UserDto userDto) throws UnsupportedEncodingException {
 
-		if (userDto.isValid()) {
-			userDto.setEmail(userDto.getEmail().trim().toLowerCase());
-			Optional<User> userOpt = userRepo.findByEmail(userDto.getEmail());
-			if (userOpt.isPresent()) {
-				throw BadRequestException.of("User already exist");
-			}
+        if (userDto.isValid()) {
+            userDto.setEmail(userDto.getEmail().trim().toLowerCase());
+            Optional<User> userOpt = userRepo.findByEmail(userDto.getEmail());
+            if (userOpt.isPresent()) {
+                throw BadRequestException.of("User already exists");
+            }
 
-			User user = this.modelMapper.map(userDto, User.class);
-			user.setVerificationCode(getFreshVerificationCode());
-			if (userDto.getPassword() == null) {
-				emailService.sendEmailForRegister(user);
-			} else {
-				user.setPasswordSet(true);
-			}
-			user.setLinkExpiryDate(JavaHelper.getCurrentDate().toString());
-			userRepo.save(user);
-			JSONObject json = new JSONObject();
-			return json.put("message", "User created successfully").toString();
-		}
-		throw BadRequestException.of("Please check your input credentials");
-	}
+            User user = this.modelMapper.map(userDto, User.class);
+            user.setVerificationCode(getFreshVerificationCode());
+            if (userDto.getPassword() == null) {
+                emailService.sendEmailForRegister(user);
+            } else {
+                user.setPasswordSet(true);
+            }
+            user.setLinkExpiryDate(JavaHelper.getCurrentDate().toString());
+            userRepo.save(user);
+System.out.println(user.getUserId());
+            // Store user in Hazelcast map
+            userMap.put(user.getUserId(), user);
 
-	public String googleSignUp(String code) throws GeneralSecurityException, IOException {
+            JSONObject json = new JSONObject();
+         
+        }
+        else
+        {
+        	throw BadRequestException.of("Please check your input credentials");
+        }
+        
+    }
+
+	public void googleSignUp(String code) throws GeneralSecurityException, IOException {
 		if (code != null) {
 			// 30-June-2022 @manish get id token from credential
 			// first verify credential code with google then it will return us id Token.
@@ -194,7 +225,7 @@ public class UserServiceImpl implements UserService {
 					userDto.setName(name);
 					userDto.setPassword(EmailUtil.generateRandomPassword(10, 97, 122));
 					userDto.setAbout("Google User");
-					return signup(userDto);
+					signup(userDto);
 
 				}
 			}

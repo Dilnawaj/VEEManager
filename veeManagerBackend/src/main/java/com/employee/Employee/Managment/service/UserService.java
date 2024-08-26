@@ -12,13 +12,13 @@ import com.employee.Employee.Managment.model.UserDto;
 
 public interface UserService {
 
-	String signup(UserDto userDto) throws UnsupportedEncodingException;
+	void signup(UserDto userDto) throws UnsupportedEncodingException;
 
 	UserDto getUserDetails(String userId);
 	
 	String deleteUser(String userId);
 
-String  googleSignUp(String code) throws GeneralSecurityException, IOException;
+void  googleSignUp(String code) throws GeneralSecurityException, IOException;
 
 String resetPassword(LoginModel loginModel) throws ParseException;
 

@@ -14,16 +14,22 @@ import org.springframework.stereotype.Service;
 
 import com.employee.Employee.Managment.config.EmailService;
 import com.employee.Employee.Managment.entities.EmailData;
+import com.employee.Employee.Managment.entities.Employee;
 import com.employee.Employee.Managment.entities.User;
 import com.employee.Employee.Managment.entities.Vendor;
 import com.employee.Employee.Managment.exception.BadRequestException;
 import com.employee.Employee.Managment.model.Email;
+import com.employee.Employee.Managment.model.EmployeeDto;
 import com.employee.Employee.Managment.model.ShareEmail;
 import com.employee.Employee.Managment.model.VendorDto;
 import com.employee.Employee.Managment.repos.EmailDataRepo;
 import com.employee.Employee.Managment.repos.UserRepo;
 import com.employee.Employee.Managment.repos.VendorRepo;
 import com.employee.Employee.Managment.service.VendorService;
+import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.map.IMap;
+
+import jakarta.annotation.PostConstruct;
 @Service
 public class VendorImpl implements VendorService{
 	@Autowired
@@ -37,8 +43,22 @@ public class VendorImpl implements VendorService{
 	private EmailDataRepo emailDataRepo;
 	
 	private ModelMapper modelMapper = new ModelMapper();
+	
+	  private static final String MAP_NAME = "vendor-map";
+
+	    @Autowired
+	    private HazelcastInstance hazelcastInstance;
+
+
+	    private IMap<String, Vendor> vendorMap;
+
+	    @PostConstruct
+	    public void init() {
+	    	vendorMap = hazelcastInstance.getMap(MAP_NAME);
+	    }
+	
 	@Override
-	public String addVendor(VendorDto vendorDto, String userId) {
+	public void addVendor(VendorDto vendorDto, String userId) {
 		Optional<User> userOpt = userRepo.findById(userId.toString());
 		if (userOpt.isPresent()) {
 
@@ -49,7 +69,8 @@ public class VendorImpl implements VendorService{
 				vendor.setUser(userOpt.get());
 				vendor = vendorRepo.save(vendor);
 				JSONObject json = new JSONObject();
-				return json.put("message", "Vendor created successfully.").toString();
+				 vendorMap.put(vendor.getId(), vendor);
+				return ;
 			}
 			throw BadRequestException.of("Vendor already exsist.");
 		}
@@ -63,6 +84,7 @@ public class VendorImpl implements VendorService{
 		if (vendorOpt.isPresent()) {
 			vendorRepo.delete(vendorOpt.get());
 			JSONObject json = new JSONObject();
+			vendorMap.remove(vendorId);
 			return json.put("message", "Vendor deleted  successfully.").toString();
 		}
 		throw BadRequestException.of("Vendor does not exsist");
@@ -70,6 +92,12 @@ public class VendorImpl implements VendorService{
 
 	@Override
 	public VendorDto getVendor(String vendorId) {
+		
+		if(vendorMap.get(vendorId)!=null)
+		{
+			return this.modelMapper.map(vendorMap.get(vendorId), VendorDto.class);
+		}
+		
 		Optional<Vendor> vendorOpt = vendorRepo.findById(vendorId.toString());
 
 		if (vendorOpt.isPresent()) {
@@ -80,7 +108,7 @@ public class VendorImpl implements VendorService{
 	}
 
 	@Override
-	public String updateVendor(VendorDto vendorDto, String userId, String vendorId) {
+	public void updateVendor(VendorDto vendorDto, String userId, String vendorId) {
 		Optional<Vendor> vendorOpt = vendorRepo.findById(vendorId.toString());
 		if (vendorOpt.isPresent()) {
 			Vendor vendor = vendorOpt.get();
@@ -89,8 +117,9 @@ public class VendorImpl implements VendorService{
 			vendor.setEmailAddress(vendorDto.getEmailAddress());
 			vendor.setName(vendorDto.getName());
 			vendorRepo.save(vendor);
-			JSONObject json = new JSONObject();
-			return json.put("message", "Vendor updated  successfully.").toString();
+
+			 vendorMap.put(vendor.getId(), vendor);
+			 return;
 		}
 		throw BadRequestException.of("Vendor does not exsist");
 	}
