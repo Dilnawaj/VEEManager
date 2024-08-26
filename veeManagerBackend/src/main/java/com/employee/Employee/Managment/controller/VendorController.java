@@ -32,7 +32,7 @@ public class VendorController {
 
 	@PostMapping("add/{userId}")
 	ResponseEntity<String> addVendor(@RequestBody VendorDto vendorDto, @PathVariable String userId) {
-		vendorService.addVendor(vendorDto, userId)
+		vendorService.addVendor(vendorDto, userId);
 		return ResponseEntity.ok("");
 	}
 
